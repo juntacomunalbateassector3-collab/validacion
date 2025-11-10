@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Validación de Certificados - Junta de Acción Comunal</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qr-scanner/1.4.2/qr-scanner.min.js"></script>
+    <!-- Cargar jsQR desde CDN confiable -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         :root {
@@ -60,11 +61,6 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
         
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
         .validation-card {
             background: var(--card-bg);
             padding: 30px;
@@ -72,6 +68,36 @@
             box-shadow: var(--shadow);
             width: 100%;
             margin-bottom: 20px;
+        }
+        
+        .url-input-section {
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .input-group input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
         }
         
         .upload-section {
@@ -85,11 +111,6 @@
         
         .upload-section:hover {
             border-color: var(--primary);
-        }
-        
-        .upload-section.dragover {
-            border-color: var(--primary);
-            background: var(--light);
         }
         
         .upload-icon {
@@ -127,20 +148,38 @@
             color: white;
         }
         
-        .camera-section {
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            flex-direction: column;
+            color: white;
             display: none;
-            text-align: center;
-            margin-bottom: 20px;
         }
         
-        #cameraPreview {
-            width: 100%;
-            max-width: 400px;
-            height: 300px;
-            border-radius: 10px;
-            object-fit: cover;
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
             margin-bottom: 15px;
-            border: 3px solid var(--primary);
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none !important;
         }
         
         .results-section {
@@ -152,33 +191,6 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .certificate-data {
-            background: var(--light);
-            padding: 20px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .data-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        
-        .data-row:last-child {
-            border-bottom: none;
-        }
-        
-        .data-label {
-            font-weight: 600;
-            color: var(--dark);
-        }
-        
-        .data-value {
-            color: var(--text);
         }
         
         .status-card {
@@ -217,60 +229,51 @@
             margin: 10px 0;
         }
         
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1001;
-            flex-direction: column;
-            color: white;
-            display: none;
-        }
-        
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: white;
-            animation: spin 1s ease-in-out infinite;
-            margin-bottom: 15px;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        .hidden {
-            display: none !important;
-        }
-        
-        .method-selector {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
+        .certificate-data {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 15px;
             margin-bottom: 20px;
         }
         
-        .method-btn {
-            flex: 1;
-            max-width: 200px;
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
         }
         
-        @media (max-width: 768px) {
-            .method-selector {
-                flex-direction: column;
-            }
-            
-            .method-btn {
-                max-width: none;
-            }
+        .data-row:last-child {
+            border-bottom: none;
+        }
+        
+        .data-label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .data-value {
+            color: var(--text);
+        }
+        
+        .auto-validation-message {
+            background: #E3F2FD;
+            border: 2px solid #2196F3;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #1565C0;
+        }
+        
+        .error-message {
+            background: #FFEBEE;
+            border: 2px solid #f44336;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #c62828;
         }
     </style>
 </head>
@@ -286,34 +289,45 @@
                 Verifique la autenticidad del certificado
             </h2>
             
-            <div class="method-selector">
-                <button id="btnUpload" class="btn btn-primary method-btn">
-                    <i class="fas fa-upload"></i> Cargar Imagen QR
-                </button>
-                <button id="btnCamera" class="btn btn-secondary method-btn">
-                    <i class="fas fa-camera"></i> Usar Cámara
+            <div id="autoValidationMessage" class="auto-validation-message" style="display: none;">
+                <i class="fas fa-sync-alt fa-spin"></i> 
+                <strong>Validando certificado automáticamente...</strong>
+            </div>
+            
+            <div id="errorMessage" class="error-message" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i> 
+                <strong id="errorText">Error en la validación</strong>
+            </div>
+            
+            <!-- Sección para pegar URL manualmente -->
+            <div class="url-input-section" id="urlSection">
+                <div class="input-group">
+                    <label for="urlInput"><i class="fas fa-link"></i> Pegar URL del certificado:</label>
+                    <input type="text" id="urlInput" placeholder="https://juntacomunalbateassector3-collab.github.io/validacion/?data=..." style="width: 100%;">
+                </div>
+                <button id="btnValidarUrl" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-check-circle"></i> Validar Certificado
                 </button>
             </div>
             
+            <div style="text-align: center; margin: 20px 0; color: var(--text-light);">
+                <strong>O</strong>
+            </div>
+            
+            <!-- Sección para cargar imagen QR -->
             <div class="upload-section" id="uploadSection">
                 <div class="upload-icon">
                     <i class="fas fa-qrcode"></i>
                 </div>
-                <h3>Arrastra o selecciona la imagen del QR</h3>
-                <p>Formatos soportados: JPG, PNG, GIF</p>
+                <h3>Subir imagen del código QR</h3>
+                <p>Formatos soportados: JPG, PNG, GIF, WebP</p>
                 <input type="file" id="qrFileInput" accept="image/*" style="display: none;">
                 <button id="btnSelectFile" class="btn btn-primary" style="margin-top: 15px;">
                     <i class="fas fa-folder-open"></i> Seleccionar Archivo
                 </button>
             </div>
             
-            <div class="camera-section" id="cameraSection">
-                <video id="cameraPreview"></video>
-                <button id="btnStopCamera" class="btn btn-secondary">
-                    <i class="fas fa-stop"></i> Detener Cámara
-                </button>
-            </div>
-            
+            <!-- Sección de resultados -->
             <div class="results-section" id="resultsSection">
                 <div class="status-card" id="statusCard">
                     <div class="status-icon" id="statusIcon"></div>
@@ -350,10 +364,7 @@
                         <span class="data-label">Renglón Nº:</span>
                         <span class="data-value" id="dataRenglon">-</span>
                     </div>
-                    <div class="data-row">
-                        <span class="data-label">Dirección:</span>
-                        <span class="data-value" id="dataDireccion">-</span>
-                    </div>
+                   
                     <div class="data-row">
                         <span class="data-label">Fecha de Emisión:</span>
                         <span class="data-value" id="dataFechaEmision">-</span>
@@ -377,189 +388,337 @@
     </div>
 
     <script>
-        // Variables globales
-        let qrScanner = null;
-        let currentStream = null;
+        // Variable para controlar si ya se está procesando
+        let procesando = false;
 
-        // Inicializar la aplicación
+        // Verificar que las librerías estén cargadas
+        function verificarLibrerias() {
+            if (typeof CryptoJS === 'undefined') {
+                throw new Error('CryptoJS no está cargado');
+            }
+            if (typeof jsQR === 'undefined') {
+                throw new Error('jsQR no está cargado');
+            }
+            console.log('✅ Todas las librerías cargadas correctamente');
+        }
+
+        // Inicializar la aplicación cuando se carga la página
         document.addEventListener('DOMContentLoaded', function() {
-            inicializarApp();
+            console.log('🚀 Página cargada - Iniciando validación automática...');
+            try {
+                verificarLibrerias();
+                inicializarApp();
+            } catch (error) {
+                console.error('❌ Error cargando librerías:', error);
+                mostrarError('Error técnico: ' + error.message + '. Recarga la página.');
+            }
         });
 
         function inicializarApp() {
             configurarEventListeners();
+            verificarParametrosURL();
+        }
+
+        function verificarParametrosURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const dataParam = urlParams.get('data');
+            
+            console.log('🔍 Verificando parámetros URL:', {
+                dataParam: dataParam ? 'SI' : 'NO',
+                urlCompleta: window.location.href
+            });
+            
+            if (dataParam && !procesando) {
+                console.log('✅ Parámetro "data" detectado - Validando automáticamente...');
+                procesando = true;
+                
+                // Mostrar mensaje de validación automática
+                document.getElementById('autoValidationMessage').style.display = 'block';
+                document.getElementById('urlInput').value = window.location.href;
+                
+                // Ocultar secciones de entrada
+                document.getElementById('uploadSection').style.display = 'none';
+                document.getElementById('urlSection').style.display = 'none';
+                
+                // Validar automáticamente después de un breve delay
+                setTimeout(() => {
+                    validarCertificado(dataParam);
+                }, 500);
+                
+            } else {
+                console.log('ℹ️ No hay parámetros de certificado en la URL');
+                document.getElementById('autoValidationMessage').style.display = 'none';
+            }
         }
 
         function configurarEventListeners() {
-            // Selectores de método
-            document.getElementById('btnUpload').addEventListener('click', mostrarUploadSection);
-            document.getElementById('btnCamera').addEventListener('click', iniciarCamara);
+            // Validar desde URL
+            document.getElementById('btnValidarUrl').addEventListener('click', function() {
+                const url = document.getElementById('urlInput').value.trim();
+                if (url) {
+                    validarDesdeURL(url);
+                } else {
+                    mostrarError('Por favor, ingresa una URL válida');
+                }
+            });
             
-            // Upload section
-            document.getElementById('btnSelectFile').addEventListener('click', () => {
+            // Subir archivo QR
+            document.getElementById('btnSelectFile').addEventListener('click', function() {
                 document.getElementById('qrFileInput').click();
             });
             
             document.getElementById('qrFileInput').addEventListener('change', procesarArchivoQR);
             
-            // Drag and drop
-            const uploadSection = document.getElementById('uploadSection');
-            uploadSection.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadSection.classList.add('dragover');
-            });
-            
-            uploadSection.addEventListener('dragleave', () => {
-                uploadSection.classList.remove('dragover');
-            });
-            
-            uploadSection.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadSection.classList.remove('dragover');
-                if (e.dataTransfer.files.length > 0) {
-                    procesarArchivo(e.dataTransfer.files[0]);
-                }
-            });
-            
-            // Cámara
-            document.getElementById('btnStopCamera').addEventListener('click', detenerCamara);
-            
             // Nueva validación
             document.getElementById('btnNewValidation').addEventListener('click', resetearValidacion);
+            
+            // Enter en el input de URL
+            document.getElementById('urlInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('btnValidarUrl').click();
+                }
+            });
         }
 
-        function mostrarUploadSection() {
-            document.getElementById('uploadSection').style.display = 'block';
-            document.getElementById('cameraSection').style.display = 'none';
-            detenerCamara();
-        }
-
-        async function iniciarCamara() {
+        function validarDesdeURL(url) {
+            if (procesando) return;
+            procesando = true;
+            
+            mostrarLoader('Validando certificado desde URL...');
+            
             try {
-                document.getElementById('uploadSection').style.display = 'none';
-                document.getElementById('cameraSection').style.display = 'block';
+                console.log('🔗 Validando desde URL:', url);
                 
-                const video = document.getElementById('cameraPreview');
-                currentStream = await navigator.mediaDevices.getUserMedia({ 
-                    video: { facingMode: 'environment' } 
-                });
-                video.srcObject = currentStream;
+                // Extraer datos de la URL
+                let datosEncriptados;
                 
-                // Inicializar QR Scanner
-                qrScanner = new QrScanner(
-                    video,
-                    result => procesarResultadoQR(result),
-                    {
-                        highlightScanRegion: true,
-                        highlightCodeOutline: true,
-                    }
-                );
+                if (url.includes('?')) {
+                    const urlObj = new URL(url);
+                    datosEncriptados = urlObj.searchParams.get('data');
+                } else {
+                    // Si es solo el parámetro data
+                    const match = url.match(/data=([^&]+)/);
+                    datosEncriptados = match ? match[1] : null;
+                }
                 
-                await qrScanner.start();
+                if (!datosEncriptados) {
+                    throw new Error('No se encontraron datos de certificado en la URL');
+                }
+                
+                console.log('📦 Datos encriptados encontrados');
+                
+                // Validar los datos
+                validarCertificado(datosEncriptados);
                 
             } catch (error) {
-                console.error('Error al acceder a la cámara:', error);
-                alert('No se pudo acceder a la cámara. Por favor, permite el acceso a la cámara o usa la opción de subir imagen.');
-                mostrarUploadSection();
+                procesando = false;
+                ocultarLoader();
+                console.error('❌ Error validando URL:', error);
+                mostrarError('Error: ' + error.message);
             }
-        }
-
-        function detenerCamara() {
-            if (qrScanner) {
-                qrScanner.stop();
-                qrScanner = null;
-            }
-            
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop());
-                currentStream = null;
-            }
-            
-            document.getElementById('cameraPreview').srcObject = null;
         }
 
         function procesarArchivoQR(event) {
+            if (procesando) return;
+            
             const file = event.target.files[0];
             if (file) {
-                procesarArchivo(file);
+                if (!file.type.match('image.*')) {
+                    mostrarError('Por favor, selecciona un archivo de imagen (JPG, PNG, GIF, WebP)');
+                    return;
+                }
+
+                procesando = true;
+                mostrarLoader('Procesando imagen...');
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = new Image();
+                    
+                    img.onload = function() {
+                        procesarImagenQR(img);
+                    };
+                    
+                    img.onerror = function() {
+                        procesando = false;
+                        ocultarLoader();
+                        mostrarError('Error al cargar la imagen. Intenta con otro formato.');
+                    };
+                    
+                    img.src = e.target.result;
+                };
+                
+                reader.onerror = function() {
+                    procesando = false;
+                    ocultarLoader();
+                    mostrarError('Error al leer el archivo.');
+                };
+                
+                reader.readAsDataURL(file);
             }
         }
 
-        function procesarArchivo(file) {
+        function procesarImagenQR(img) {
             mostrarLoader('Analizando código QR...');
             
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                // Crear imagen temporal
-                const img = new Image();
-                img.onload = function() {
-                    // Usar QR Scanner para leer la imagen
-                    QrScanner.scanImage(img)
-                        .then(result => procesarResultadoQR(result))
-                        .catch(error => {
-                            ocultarLoader();
-                            alert('No se pudo leer el código QR. Asegúrate de que la imagen sea clara y contenga un código QR válido.');
-                            console.error('Error leyendo QR:', error);
+            setTimeout(() => {
+                try {
+                    // Verificar que jsQR esté disponible
+                    if (typeof jsQR === 'undefined') {
+                        throw new Error('La librería jsQR no está disponible');
+                    }
+                    
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Usar tamaño original para mejor calidad
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    
+                    // Usar jsQR para decodificar
+                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
+                        inversionAttempts: 'dontInvert',
+                    });
+                    
+                    if (code) {
+                        console.log('✅ QR detectado:', code.data);
+                        extraerYValidarDeQR(code.data);
+                    } else {
+                        // Intentar con inversión
+                        const codeAttempt2 = jsQR(imageData.data, imageData.width, imageData.height, {
+                            inversionAttempts: 'onlyInvert',
                         });
-                };
-                img.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
+                        
+                        if (codeAttempt2) {
+                            console.log('✅ QR detectado (segundo intento):', codeAttempt2.data);
+                            extraerYValidarDeQR(codeAttempt2.data);
+                        } else {
+                            procesando = false;
+                            ocultarLoader();
+                            mostrarError('No se pudo detectar un código QR en la imagen. Asegúrate de que la imagen sea clara y el QR esté completo.');
+                        }
+                    }
+                    
+                } catch (error) {
+                    procesando = false;
+                    ocultarLoader();
+                    console.error('❌ Error procesando imagen:', error);
+                    mostrarError('Error al procesar la imagen: ' + error.message);
+                }
+            }, 300);
         }
 
-        function procesarResultadoQR(resultado) {
-            console.log('QR detectado:', resultado);
-            validarCertificado(resultado);
-        }
-
-        function validarCertificado(qrData) {
-            mostrarLoader('Validando certificado...');
-            
+        function extraerYValidarDeQR(qrData) {
             try {
-                // Extraer datos encriptados de la URL
-                const url = new URL(qrData);
-                const datosEncriptados = url.searchParams.get('data');
+                console.log('📋 Procesando datos QR');
                 
-                if (!datosEncriptados) {
-                    throw new Error('Formato de QR inválido');
+                let datosEncriptados;
+                
+                if (qrData.includes('?')) {
+                    const url = new URL(qrData);
+                    datosEncriptados = url.searchParams.get('data');
+                } else if (qrData.includes('data=')) {
+                    const match = qrData.match(/data=([^&]+)/);
+                    datosEncriptados = match ? match[1] : null;
+                } else {
+                    // Asumir que son los datos directamente
+                    datosEncriptados = qrData;
                 }
                 
-                // Desencriptar datos
+                if (datosEncriptados) {
+                    validarCertificado(datosEncriptados);
+                } else {
+                    throw new Error('El QR no contiene datos válidos de certificado');
+                }
+                
+            } catch (error) {
+                procesando = false;
+                ocultarLoader();
+                console.error('❌ Error procesando QR:', error);
+                mostrarError('Error al procesar el código QR: ' + error.message);
+            }
+        }
+
+        function validarCertificado(datosEncriptados) {
+            console.log('🔐 Iniciando validación de certificado...');
+            mostrarLoader('Validando certificado...');
+            
+            // Timeout de seguridad para evitar bloqueos
+            const timeoutId = setTimeout(() => {
+                if (procesando) {
+                    procesando = false;
+                    ocultarLoader();
+                    mostrarError('Tiempo de espera agotado. El certificado podría estar corrupto o la clave de encriptación incorrecta.');
+                }
+            }, 8000);
+            
+            try {
+                console.log('🔓 Desencriptando datos...');
                 const datosDesencriptados = desencriptarDatos(datosEncriptados);
+                console.log('✅ Datos desencriptados correctamente');
+                
                 const certificado = JSON.parse(datosDesencriptados);
+                console.log('📄 Certificado parseado correctamente');
                 
-                console.log('Certificado desencriptado:', certificado);
+                // Validar campos requeridos
+                if (!certificado.nombre || !certificado.cedula) {
+                    throw new Error('Certificado incompleto. Faltan campos requeridos.');
+                }
                 
-                // Verificar vigencia
                 const estado = verificarVigencia(certificado.fechaExpiracion);
+                console.log('📅 Estado de vigencia:', estado);
+                
+                // Limpiar timeout
+                clearTimeout(timeoutId);
                 
                 // Mostrar resultados
                 mostrarResultados(certificado, estado);
                 ocultarLoader();
+                procesando = false;
+                
+                // Ocultar mensajes
+                document.getElementById('autoValidationMessage').style.display = 'none';
+                document.getElementById('errorMessage').style.display = 'none';
                 
             } catch (error) {
+                // Limpiar timeout
+                clearTimeout(timeoutId);
+                
+                procesando = false;
                 ocultarLoader();
-                console.error('Error validando certificado:', error);
-                alert('Error al validar el certificado: ' + error.message);
+                console.error('❌ Error validando certificado:', error);
+                mostrarError('Error al validar el certificado: ' + error.message);
+                
+                // Mostrar secciones de entrada en caso de error
+                document.getElementById('uploadSection').style.display = 'block';
+                document.getElementById('urlSection').style.display = 'block';
+                document.getElementById('autoValidationMessage').style.display = 'none';
             }
         }
 
         function desencriptarDatos(datosEncriptados) {
-            // Clave secreta (debe ser la misma que en la generación)
             const claveSecreta = "BateasSector3Certificado2024";
             
-            // Decodificar Base64
-            const datosBase64 = atob(datosEncriptados);
-            
-            // Desencriptar usando AES
-            const bytesDesencriptados = CryptoJS.AES.decrypt(datosBase64, claveSecreta);
-            const datosOriginales = bytesDesencriptados.toString(CryptoJS.enc.Utf8);
-            
-            if (!datosOriginales) {
-                throw new Error('Certificado inválido o corrupto');
+            try {
+                // Decodificar Base64
+                const datosBase64 = atob(datosEncriptados);
+                
+                // Desencriptar usando AES
+                const bytesDesencriptados = CryptoJS.AES.decrypt(datosBase64, claveSecreta);
+                const datosOriginales = bytesDesencriptados.toString(CryptoJS.enc.Utf8);
+                
+                if (!datosOriginales) {
+                    throw new Error('Certificado inválido. Verifica que la clave de encriptación sea correcta.');
+                }
+                
+                return datosOriginales;
+                
+            } catch (error) {
+                throw new Error('Error desencriptando: ' + error.message);
             }
-            
-            return datosOriginales;
         }
 
         function verificarVigencia(fechaExpiracion) {
@@ -593,24 +752,24 @@
         }
 
         function mostrarResultados(certificado, estado) {
-            // Detener cámara si está activa
-            detenerCamara();
+            console.log('🎯 Mostrando resultados...');
             
-            // Ocultar secciones de entrada
+            // Ocultar todo primero
             document.getElementById('uploadSection').style.display = 'none';
-            document.getElementById('cameraSection').style.display = 'none';
+            document.getElementById('urlSection').style.display = 'none';
+            document.getElementById('autoValidationMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
             
-            // Mostrar sección de resultados
+            // Mostrar resultados
             document.getElementById('resultsSection').style.display = 'block';
             
-            // Llenar datos del certificado
-            document.getElementById('dataNombre').textContent = certificado.nombre;
-            document.getElementById('dataCedula').textContent = certificado.cedula;
+            // Llenar datos
+            document.getElementById('dataNombre').textContent = certificado.nombre || '-';
+            document.getElementById('dataCedula').textContent = certificado.cedula || '-';
             document.getElementById('dataFechaAfiliacion').textContent = formatearFecha(certificado.fechaAfiliacion);
-            document.getElementById('dataRegistro').textContent = certificado.registro;
-            document.getElementById('dataFolio').textContent = certificado.folio;
-            document.getElementById('dataRenglon').textContent = certificado.renglon;
-            document.getElementById('dataDireccion').textContent = certificado.direccion;
+            document.getElementById('dataRegistro').textContent = certificado.registro || '-';
+            document.getElementById('dataFolio').textContent = certificado.folio || '-';
+            document.getElementById('dataRenglon').textContent = certificado.renglon || '-';
             document.getElementById('dataFechaEmision').textContent = formatearFecha(certificado.fechaEmision);
             document.getElementById('dataFechaExpiracion').textContent = formatearFecha(certificado.fechaExpiracion);
             
@@ -622,7 +781,6 @@
             const daysCounter = document.getElementById('daysCounter');
             
             statusCard.className = 'status-card';
-            statusIcon.className = 'status-icon';
             
             if (estado.tipo === 'valido') {
                 statusCard.classList.add('status-valid');
@@ -648,18 +806,41 @@
                 daysCounter.textContent = `Venció hace ${estado.dias} días`;
                 daysCounter.style.color = '#f44336';
             }
+            
+            console.log('✅ Resultados mostrados correctamente');
+        }
+
+        function mostrarError(mensaje) {
+            document.getElementById('errorText').textContent = mensaje;
+            document.getElementById('errorMessage').style.display = 'block';
         }
 
         function resetearValidacion() {
+            procesando = false;
             document.getElementById('resultsSection').style.display = 'none';
             document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('urlSection').style.display = 'block';
             document.getElementById('qrFileInput').value = '';
+            document.getElementById('urlInput').value = '';
+            document.getElementById('autoValidationMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+            
+            // Limpiar URL sin recargar
+            window.history.replaceState({}, document.title, window.location.pathname);
         }
 
         function formatearFecha(fecha) {
             if (!fecha) return '-';
-            const date = new Date(fecha);
-            return date.toLocaleDateString('es-CO');
+            try {
+                const date = new Date(fecha);
+                return date.toLocaleDateString('es-CO', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            } catch (error) {
+                return fecha;
+            }
         }
 
         function mostrarLoader(texto = "Procesando...") {
