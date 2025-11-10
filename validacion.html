@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validación de Certificados - Junta de Acción Comunal</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qr-scanner/1.4.2/qr-scanner.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #8BC34A;
+            --primary-dark: #689F38;
+            --secondary: #FFC107;
+            --accent: #4CAF50;
+            --danger: #f44336;
+            --warning: #ff9800;
+            --light: #F1F8E9;
+            --dark: #33691E;
+            --text: #212121;
+            --text-light: #757575;
+            --background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: var(--background);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 800px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .validation-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        
+        .upload-section {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 15px;
+            transition: all 0.3s;
+        }
+        
+        .upload-section:hover {
+            border-color: var(--primary);
+        }
+        
+        .upload-section.dragover {
+            border-color: var(--primary);
+            background: var(--light);
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(to right, #9E9E9E, #757575);
+            color: white;
+        }
+        
+        .camera-section {
+            display: none;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        #cameraPreview {
+            width: 100%;
+            max-width: 400px;
+            height: 300px;
+            border-radius: 10px;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid var(--primary);
+        }
+        
+        .results-section {
+            display: none;
+            margin-top: 30px;
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .certificate-data {
+            background: var(--light);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .data-row:last-child {
+            border-bottom: none;
+        }
+        
+        .data-label {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .data-value {
+            color: var(--text);
+        }
+        
+        .status-card {
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .status-valid {
+            background: #E8F5E8;
+            border: 2px solid var(--accent);
+            color: var(--accent);
+        }
+        
+        .status-expired {
+            background: #FFEBEE;
+            border: 2px solid var(--danger);
+            color: var(--danger);
+        }
+        
+        .status-warning {
+            background: #FFF3E0;
+            border: 2px solid var(--warning);
+            color: var(--warning);
+        }
+        
+        .status-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .days-counter {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            flex-direction: column;
+            color: white;
+            display: none;
+        }
+        
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 15px;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .method-selector {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        
+        .method-btn {
+            flex: 1;
+            max-width: 200px;
+        }
+        
+        @media (max-width: 768px) {
+            .method-selector {
+                flex-direction: column;
+            }
+            
+            .method-btn {
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-shield-check"></i> Validación de Certificados</h1>
+            <p>Junta de Acción Comunal Barrio Bateas Sector 3</p>
+        </div>
+        
+        <div class="validation-card">
+            <h2 style="text-align: center; margin-bottom: 20px; color: var(--dark);">
+                Verifique la autenticidad del certificado
+            </h2>
+            
+            <div class="method-selector">
+                <button id="btnUpload" class="btn btn-primary method-btn">
+                    <i class="fas fa-upload"></i> Cargar Imagen QR
+                </button>
+                <button id="btnCamera" class="btn btn-secondary method-btn">
+                    <i class="fas fa-camera"></i> Usar Cámara
+                </button>
+            </div>
+            
+            <div class="upload-section" id="uploadSection">
+                <div class="upload-icon">
+                    <i class="fas fa-qrcode"></i>
+                </div>
+                <h3>Arrastra o selecciona la imagen del QR</h3>
+                <p>Formatos soportados: JPG, PNG, GIF</p>
+                <input type="file" id="qrFileInput" accept="image/*" style="display: none;">
+                <button id="btnSelectFile" class="btn btn-primary" style="margin-top: 15px;">
+                    <i class="fas fa-folder-open"></i> Seleccionar Archivo
+                </button>
+            </div>
+            
+            <div class="camera-section" id="cameraSection">
+                <video id="cameraPreview"></video>
+                <button id="btnStopCamera" class="btn btn-secondary">
+                    <i class="fas fa-stop"></i> Detener Cámara
+                </button>
+            </div>
+            
+            <div class="results-section" id="resultsSection">
+                <div class="status-card" id="statusCard">
+                    <div class="status-icon" id="statusIcon"></div>
+                    <h3 id="statusTitle">Estado del Certificado</h3>
+                    <p id="statusMessage">Verificando...</p>
+                    <div class="days-counter" id="daysCounter"></div>
+                </div>
+                
+                <div class="certificate-data">
+                    <h4 style="margin-bottom: 15px; color: var(--dark);">
+                        <i class="fas fa-user-check"></i> Datos del Afiliado
+                    </h4>
+                    <div class="data-row">
+                        <span class="data-label">Nombre:</span>
+                        <span class="data-value" id="dataNombre">-</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Cédula:</span>
+                        <span class="data-value" id="dataCedula">-</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Fecha de Afiliación:</span>
+                        <span class="data-value" id="dataFechaAfiliacion">-</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Registro Nº:</span>
+                        <span class="data-value" id="dataRegistro">-</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Folio Nº:</span>
+                        <span class="data-value" id="dataFolio">-</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Renglón Nº:</span>
+                        <span class="data-value" id="dataRenglon">-</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Dirección:</span>
+                        <span class="data-value" id="dataDireccion">-</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Fecha de Emisión:</span>
+                        <span class="data-value" id="dataFechaEmision">-</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Fecha de Expiración:</span>
+                        <span class="data-value" id="dataFechaExpiracion">-</span>
+                    </div>
+                </div>
+                
+                <button id="btnNewValidation" class="btn btn-primary" style="width: 100%;">
+                    <i class="fas fa-redo"></i> Realizar Nueva Validación
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner"></div>
+        <p id="loadingText">Procesando certificado...</p>
+    </div>
+
+    <script>
+        // Variables globales
+        let qrScanner = null;
+        let currentStream = null;
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            inicializarApp();
+        });
+
+        function inicializarApp() {
+            configurarEventListeners();
+        }
+
+        function configurarEventListeners() {
+            // Selectores de método
+            document.getElementById('btnUpload').addEventListener('click', mostrarUploadSection);
+            document.getElementById('btnCamera').addEventListener('click', iniciarCamara);
+            
+            // Upload section
+            document.getElementById('btnSelectFile').addEventListener('click', () => {
+                document.getElementById('qrFileInput').click();
+            });
+            
+            document.getElementById('qrFileInput').addEventListener('change', procesarArchivoQR);
+            
+            // Drag and drop
+            const uploadSection = document.getElementById('uploadSection');
+            uploadSection.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadSection.classList.add('dragover');
+            });
+            
+            uploadSection.addEventListener('dragleave', () => {
+                uploadSection.classList.remove('dragover');
+            });
+            
+            uploadSection.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadSection.classList.remove('dragover');
+                if (e.dataTransfer.files.length > 0) {
+                    procesarArchivo(e.dataTransfer.files[0]);
+                }
+            });
+            
+            // Cámara
+            document.getElementById('btnStopCamera').addEventListener('click', detenerCamara);
+            
+            // Nueva validación
+            document.getElementById('btnNewValidation').addEventListener('click', resetearValidacion);
+        }
+
+        function mostrarUploadSection() {
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('cameraSection').style.display = 'none';
+            detenerCamara();
+        }
+
+        async function iniciarCamara() {
+            try {
+                document.getElementById('uploadSection').style.display = 'none';
+                document.getElementById('cameraSection').style.display = 'block';
+                
+                const video = document.getElementById('cameraPreview');
+                currentStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: 'environment' } 
+                });
+                video.srcObject = currentStream;
+                
+                // Inicializar QR Scanner
+                qrScanner = new QrScanner(
+                    video,
+                    result => procesarResultadoQR(result),
+                    {
+                        highlightScanRegion: true,
+                        highlightCodeOutline: true,
+                    }
+                );
+                
+                await qrScanner.start();
+                
+            } catch (error) {
+                console.error('Error al acceder a la cámara:', error);
+                alert('No se pudo acceder a la cámara. Por favor, permite el acceso a la cámara o usa la opción de subir imagen.');
+                mostrarUploadSection();
+            }
+        }
+
+        function detenerCamara() {
+            if (qrScanner) {
+                qrScanner.stop();
+                qrScanner = null;
+            }
+            
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+            
+            document.getElementById('cameraPreview').srcObject = null;
+        }
+
+        function procesarArchivoQR(event) {
+            const file = event.target.files[0];
+            if (file) {
+                procesarArchivo(file);
+            }
+        }
+
+        function procesarArchivo(file) {
+            mostrarLoader('Analizando código QR...');
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                // Crear imagen temporal
+                const img = new Image();
+                img.onload = function() {
+                    // Usar QR Scanner para leer la imagen
+                    QrScanner.scanImage(img)
+                        .then(result => procesarResultadoQR(result))
+                        .catch(error => {
+                            ocultarLoader();
+                            alert('No se pudo leer el código QR. Asegúrate de que la imagen sea clara y contenga un código QR válido.');
+                            console.error('Error leyendo QR:', error);
+                        });
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function procesarResultadoQR(resultado) {
+            console.log('QR detectado:', resultado);
+            validarCertificado(resultado);
+        }
+
+        function validarCertificado(qrData) {
+            mostrarLoader('Validando certificado...');
+            
+            try {
+                // Extraer datos encriptados de la URL
+                const url = new URL(qrData);
+                const datosEncriptados = url.searchParams.get('data');
+                
+                if (!datosEncriptados) {
+                    throw new Error('Formato de QR inválido');
+                }
+                
+                // Desencriptar datos
+                const datosDesencriptados = desencriptarDatos(datosEncriptados);
+                const certificado = JSON.parse(datosDesencriptados);
+                
+                console.log('Certificado desencriptado:', certificado);
+                
+                // Verificar vigencia
+                const estado = verificarVigencia(certificado.fechaExpiracion);
+                
+                // Mostrar resultados
+                mostrarResultados(certificado, estado);
+                ocultarLoader();
+                
+            } catch (error) {
+                ocultarLoader();
+                console.error('Error validando certificado:', error);
+                alert('Error al validar el certificado: ' + error.message);
+            }
+        }
+
+        function desencriptarDatos(datosEncriptados) {
+            // Clave secreta (debe ser la misma que en la generación)
+            const claveSecreta = "BateasSector3Certificado2024";
+            
+            // Decodificar Base64
+            const datosBase64 = atob(datosEncriptados);
+            
+            // Desencriptar usando AES
+            const bytesDesencriptados = CryptoJS.AES.decrypt(datosBase64, claveSecreta);
+            const datosOriginales = bytesDesencriptados.toString(CryptoJS.enc.Utf8);
+            
+            if (!datosOriginales) {
+                throw new Error('Certificado inválido o corrupto');
+            }
+            
+            return datosOriginales;
+        }
+
+        function verificarVigencia(fechaExpiracion) {
+            const hoy = new Date();
+            const expiracion = new Date(fechaExpiracion);
+            const diferenciaMs = expiracion - hoy;
+            const diasRestantes = Math.ceil(diferenciaMs / (1000 * 60 * 60 * 24));
+            
+            if (diasRestantes < 0) {
+                return {
+                    valido: false,
+                    tipo: 'expirado',
+                    dias: Math.abs(diasRestantes),
+                    mensaje: 'CERTIFICADO VENCIDO'
+                };
+            } else if (diasRestantes <= 30) {
+                return {
+                    valido: true,
+                    tipo: 'proximo_vencer',
+                    dias: diasRestantes,
+                    mensaje: 'VÁLIDO - PRÓXIMO A VENCER'
+                };
+            } else {
+                return {
+                    valido: true,
+                    tipo: 'valido',
+                    dias: diasRestantes,
+                    mensaje: 'CERTIFICADO VÁLIDO'
+                };
+            }
+        }
+
+        function mostrarResultados(certificado, estado) {
+            // Detener cámara si está activa
+            detenerCamara();
+            
+            // Ocultar secciones de entrada
+            document.getElementById('uploadSection').style.display = 'none';
+            document.getElementById('cameraSection').style.display = 'none';
+            
+            // Mostrar sección de resultados
+            document.getElementById('resultsSection').style.display = 'block';
+            
+            // Llenar datos del certificado
+            document.getElementById('dataNombre').textContent = certificado.nombre;
+            document.getElementById('dataCedula').textContent = certificado.cedula;
+            document.getElementById('dataFechaAfiliacion').textContent = formatearFecha(certificado.fechaAfiliacion);
+            document.getElementById('dataRegistro').textContent = certificado.registro;
+            document.getElementById('dataFolio').textContent = certificado.folio;
+            document.getElementById('dataRenglon').textContent = certificado.renglon;
+            document.getElementById('dataDireccion').textContent = certificado.direccion;
+            document.getElementById('dataFechaEmision').textContent = formatearFecha(certificado.fechaEmision);
+            document.getElementById('dataFechaExpiracion').textContent = formatearFecha(certificado.fechaExpiracion);
+            
+            // Configurar estado
+            const statusCard = document.getElementById('statusCard');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusTitle = document.getElementById('statusTitle');
+            const statusMessage = document.getElementById('statusMessage');
+            const daysCounter = document.getElementById('daysCounter');
+            
+            statusCard.className = 'status-card';
+            statusIcon.className = 'status-icon';
+            
+            if (estado.tipo === 'valido') {
+                statusCard.classList.add('status-valid');
+                statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+                statusTitle.textContent = '✓ CERTIFICADO VÁLIDO';
+                statusMessage.textContent = 'Este certificado es auténtico y se encuentra vigente';
+                daysCounter.textContent = `${estado.dias} días restantes`;
+                daysCounter.style.color = '#4CAF50';
+                
+            } else if (estado.tipo === 'proximo_vencer') {
+                statusCard.classList.add('status-warning');
+                statusIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
+                statusTitle.textContent = '⚠ PRÓXIMO A VENCER';
+                statusMessage.textContent = 'Este certificado es auténtico pero está próximo a vencer';
+                daysCounter.textContent = `${estado.dias} días restantes`;
+                daysCounter.style.color = '#ff9800';
+                
+            } else {
+                statusCard.classList.add('status-expired');
+                statusIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+                statusTitle.textContent = '✗ CERTIFICADO VENCIDO';
+                statusMessage.textContent = 'Este certificado ha expirado y ya no es válido';
+                daysCounter.textContent = `Venció hace ${estado.dias} días`;
+                daysCounter.style.color = '#f44336';
+            }
+        }
+
+        function resetearValidacion() {
+            document.getElementById('resultsSection').style.display = 'none';
+            document.getElementById('uploadSection').style.display = 'block';
+            document.getElementById('qrFileInput').value = '';
+        }
+
+        function formatearFecha(fecha) {
+            if (!fecha) return '-';
+            const date = new Date(fecha);
+            return date.toLocaleDateString('es-CO');
+        }
+
+        function mostrarLoader(texto = "Procesando...") {
+            document.getElementById('loadingText').textContent = texto;
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+
+        function ocultarLoader() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
