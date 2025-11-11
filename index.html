@@ -11,9 +11,6 @@
         :root {
             --primary: #8BC34A;
             --primary-dark: #689F38;
-            --primary-light: #C5E1A5;
-            --secondary: #FFC107;
-            --secondary-dark: #FFA000;
             --accent: #4CAF50;
             --danger: #f44336;
             --warning: #ff9800;
@@ -21,13 +18,10 @@
             --light: #F1F8E9;
             --dark: #33691E;
             --text: #212121;
-            --text-light: #757575;
-            --background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            --background: linear-gradient(135deg, var(--primary) 0%, #FFC107 100%);
             --card-bg: rgba(255, 255, 255, 0.98);
-            --shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            --shadow-hover: 0 15px 35px rgba(0, 0, 0, 0.2);
-            --radius: 16px;
-            --radius-small: 10px;
+            --shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
         }
         
         * {
@@ -40,84 +34,77 @@
         body {
             background: var(--background);
             min-height: 100vh;
-            padding: 20px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
             align-items: center;
-            line-height: 1.5;
         }
         
         .container {
             width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            max-width: 400px;
         }
         
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
             color: white;
-            width: 100%;
         }
         
         .logo {
-            width: 70px;
-            height: 70px;
+            width: 50px;
+            height: 50px;
             background: rgba(255, 255, 255, 0.2);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 15px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            margin: 0 auto 10px;
         }
         
         .logo i {
-            font-size: 2rem;
+            font-size: 1.5rem;
             color: white;
         }
         
         .header h1 {
-            font-size: 1.6rem;
-            margin-bottom: 8px;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
             font-weight: 700;
         }
         
         .header p {
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             opacity: 0.9;
         }
         
         .validation-card {
             background: var(--card-bg);
-            padding: 25px;
+            padding: 20px;
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            width: 100%;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .card-title {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             color: var(--dark);
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             font-weight: 600;
         }
         
         .method-selector {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
+            gap: 8px;
+            margin-bottom: 15px;
         }
         
         .method-btn {
             flex: 1;
-            padding: 15px 10px;
+            padding: 12px 8px;
             border: 2px solid #e0e0e0;
-            border-radius: var(--radius-small);
+            border-radius: 8px;
             background: white;
             color: var(--text);
             font-weight: 600;
@@ -126,67 +113,57 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 8px;
-            font-size: 0.9rem;
+            gap: 5px;
+            font-size: 0.8rem;
         }
         
         .method-btn.active {
             border-color: var(--primary);
             background: var(--primary);
             color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(139, 195, 74, 0.3);
         }
         
         .method-btn i {
-            font-size: 1.3rem;
+            font-size: 1.1rem;
         }
         
         .input-section {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
         
         .input-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 600;
             color: var(--dark);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
         
         .input-group input {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             border: 2px solid #e0e0e0;
-            border-radius: var(--radius-small);
-            font-size: 1rem;
-            transition: all 0.3s;
+            border-radius: 8px;
+            font-size: 0.9rem;
             background: white;
         }
         
         .input-group input:focus {
             border-color: var(--primary);
             outline: none;
-            box-shadow: 0 0 0 3px rgba(139, 195, 74, 0.2);
         }
         
         .upload-area {
             border: 2px dashed #bdbdbd;
-            border-radius: var(--radius-small);
-            padding: 30px 20px;
+            border-radius: 8px;
+            padding: 20px 15px;
             text-align: center;
-            transition: all 0.3s;
             background: #fafafa;
             cursor: pointer;
-        }
-        
-        .upload-area:hover {
-            border-color: var(--primary);
-            background: var(--light);
         }
         
         .upload-area.active {
@@ -195,47 +172,40 @@
         }
         
         .upload-icon {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: var(--primary);
-            margin-bottom: 12px;
+            margin-bottom: 8px;
         }
         
         .upload-area h3 {
             color: var(--dark);
-            margin-bottom: 8px;
-            font-size: 1.1rem;
+            margin-bottom: 5px;
+            font-size: 1rem;
         }
         
         .upload-area p {
-            color: var(--text-light);
-            font-size: 0.85rem;
-            margin-bottom: 15px;
+            color: var(--text);
+            font-size: 0.8rem;
+            margin-bottom: 10px;
         }
         
         .btn {
-            padding: 14px 20px;
+            padding: 12px 16px;
             border: none;
-            border-radius: var(--radius-small);
-            font-size: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             width: 100%;
         }
         
         .btn-primary {
-            background: linear-gradient(to right, var(--primary), var(--primary-dark));
+            background: var(--primary);
             color: white;
-            box-shadow: 0 4px 10px rgba(139, 195, 74, 0.3);
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(139, 195, 74, 0.4);
         }
         
         .btn-secondary {
@@ -260,13 +230,13 @@
         }
         
         .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid rgba(255, 255, 255, 0.3);
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top-color: white;
             animation: spin 1s ease-in-out infinite;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
         }
         
         @keyframes spin {
@@ -280,19 +250,13 @@
         .results-section {
             display: none;
             margin-top: 10px;
-            animation: fadeIn 0.5s ease-in;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         
         .status-card {
-            padding: 20px;
+            padding: 15px;
             border-radius: var(--radius);
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .status-valid {
@@ -313,56 +277,51 @@
             color: var(--warning);
         }
         
-        .status-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-        
         .status-title {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: 700;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
         
         .status-message {
             color: var(--text);
-            margin-bottom: 15px;
-            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
         }
         
         .days-counter {
-            font-size: 2rem;
+            font-size: 1.5rem;
             font-weight: bold;
-            margin: 10px 0;
+            margin: 5px 0;
         }
         
         .certificate-data {
             background: var(--light);
-            padding: 20px;
+            padding: 15px;
             border-radius: var(--radius);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .data-title {
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
+            gap: 8px;
+            margin-bottom: 12px;
             color: var(--dark);
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
         }
         
         .data-grid {
             display: grid;
-            gap: 12px;
+            gap: 8px;
         }
         
         .data-item {
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
-            padding: 10px 0;
+            padding: 8px 0;
             border-bottom: 1px solid #e0e0e0;
         }
         
@@ -373,23 +332,24 @@
         .data-label {
             font-weight: 600;
             color: var(--dark);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             flex: 1;
         }
         
         .data-value {
             color: var(--text);
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             flex: 1;
             text-align: right;
         }
         
         .message {
-            padding: 15px;
-            border-radius: var(--radius-small);
-            margin-bottom: 20px;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
             text-align: center;
             font-weight: 500;
+            font-size: 0.85rem;
         }
         
         .message-auto {
@@ -402,33 +362,6 @@
             background: #FFEBEE;
             color: #C62828;
             border: 1px solid #EF9A9A;
-        }
-        
-        @media (max-width: 480px) {
-            .container {
-                padding: 0 10px;
-            }
-            
-            .validation-card {
-                padding: 20px 15px;
-            }
-            
-            .method-selector {
-                flex-direction: column;
-            }
-            
-            .header h1 {
-                font-size: 1.4rem;
-            }
-            
-            .data-item {
-                flex-direction: column;
-                gap: 4px;
-            }
-            
-            .data-value {
-                text-align: left;
-            }
         }
     </style>
 </head>
@@ -447,7 +380,7 @@
             
             <div id="autoValidationMessage" class="message message-auto" style="display: none;">
                 <i class="fas fa-sync-alt fa-spin"></i> 
-                <strong>Validando certificado automáticamente...</strong>
+                <strong>Validando automáticamente...</strong>
             </div>
             
             <div id="errorMessage" class="message message-error" style="display: none;">
@@ -470,7 +403,7 @@
             <div class="input-section" id="urlSection">
                 <div class="input-group">
                     <label for="urlInput"><i class="fas fa-link"></i> Pegar URL del certificado</label>
-                    <input type="text" id="urlInput" placeholder="https://juntacomunalbateassector3-collab.github.io/validacion/?data=...">
+                    <input type="text" id="urlInput" placeholder="https://.../validacion/?data=...">
                 </div>
                 <button id="btnValidarUrl" class="btn btn-primary">
                     <i class="fas fa-check-circle"></i> Validar Certificado
@@ -484,7 +417,7 @@
                         <i class="fas fa-qrcode"></i>
                     </div>
                     <h3>Subir código QR</h3>
-                    <p>Arrastra o selecciona una imagen del QR</p>
+                    <p>Selecciona una imagen del QR</p>
                     <input type="file" id="qrFileInput" accept="image/*" style="display: none;">
                     <button id="btnSelectFile" class="btn btn-primary">
                         <i class="fas fa-folder-open"></i> Seleccionar Archivo
@@ -495,7 +428,6 @@
             <!-- Sección de resultados -->
             <div class="results-section" id="resultsSection">
                 <div class="status-card" id="statusCard">
-                    <div class="status-icon" id="statusIcon"></div>
                     <h3 class="status-title" id="statusTitle">Estado del Certificado</h3>
                     <p class="status-message" id="statusMessage">Verificando...</p>
                     <div class="days-counter" id="daysCounter"></div>
@@ -557,26 +489,14 @@
     <script>
         let procesando = false;
 
-        // Verificar librerías
-        function verificarLibrerias() {
-            if (typeof CryptoJS === 'undefined') {
-                throw new Error('CryptoJS no está cargado');
-            }
-            if (typeof jsQR === 'undefined') {
-                throw new Error('jsQR no está cargado');
-            }
-            console.log('✅ Todas las librerías cargadas correctamente');
-        }
-
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 Página cargada - Iniciando validación automática...');
             try {
-                verificarLibrerias();
                 inicializarApp();
             } catch (error) {
-                console.error('❌ Error cargando librerías:', error);
-                mostrarError('Error técnico: ' + error.message + '. Recarga la página.');
+                console.error('❌ Error:', error);
+                mostrarError('Error técnico. Recarga la página.');
             }
         });
 
@@ -611,27 +531,8 @@
             
             document.getElementById('qrFileInput').addEventListener('change', procesarArchivoQR);
             
-            // Drag and drop
-            const uploadArea = document.getElementById('uploadArea');
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.classList.add('active');
-            });
-            
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.classList.remove('active');
-            });
-            
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.classList.remove('active');
-                if (e.dataTransfer.files.length > 0) {
-                    procesarArchivoQR({ target: { files: e.dataTransfer.files } });
-                }
-            });
-            
             // Click en área de upload
-            uploadArea.addEventListener('click', function() {
+            document.getElementById('uploadArea').addEventListener('click', function() {
                 document.getElementById('qrFileInput').click();
             });
             
@@ -647,13 +548,11 @@
         }
 
         function cambiarMetodo(method) {
-            // Actualizar botones
             document.querySelectorAll('.method-btn').forEach(btn => {
                 btn.classList.remove('active');
             });
             document.querySelector(`[data-method="${method}"]`).classList.add('active');
             
-            // Mostrar sección correspondiente
             if (method === 'url') {
                 document.getElementById('urlSection').classList.remove('hidden');
                 document.getElementById('uploadSection').classList.add('hidden');
@@ -667,18 +566,13 @@
             const urlParams = new URLSearchParams(window.location.search);
             const dataParam = urlParams.get('data');
             
-            console.log('🔍 Verificando parámetros URL:', {
-                dataParam: dataParam ? 'SI' : 'NO'
-            });
-            
             if (dataParam && !procesando) {
-                console.log('✅ Parámetro "data" detectado - Validando automáticamente...');
+                console.log('✅ Validando automáticamente...');
                 procesando = true;
                 
                 document.getElementById('autoValidationMessage').style.display = 'block';
                 document.getElementById('urlInput').value = window.location.href;
                 
-                // Ocultar secciones de entrada
                 document.getElementById('urlSection').classList.add('hidden');
                 document.getElementById('uploadSection').classList.add('hidden');
                 
@@ -691,37 +585,28 @@
         function validarDesdeURL(url) {
             if (procesando) return;
             procesando = true;
-            
-            mostrarLoader('Validando certificado desde URL...');
+            mostrarLoader('Validando certificado...');
             
             try {
-                console.log('🔗 Validando desde URL:', url);
-                
-                // Extraer datos de la URL
                 let datosEncriptados;
                 
                 if (url.includes('?')) {
                     const urlObj = new URL(url);
                     datosEncriptados = urlObj.searchParams.get('data');
                 } else {
-                    // Si es solo el parámetro data
                     const match = url.match(/data=([^&]+)/);
                     datosEncriptados = match ? match[1] : null;
                 }
                 
                 if (!datosEncriptados) {
-                    throw new Error('No se encontraron datos de certificado en la URL');
+                    throw new Error('No se encontraron datos de certificado');
                 }
                 
-                console.log('📦 Datos encriptados encontrados');
-                
-                // Validar los datos
                 validarCertificado(datosEncriptados);
                 
             } catch (error) {
                 procesando = false;
                 ocultarLoader();
-                console.error('❌ Error validando URL:', error);
                 mostrarError('Error: ' + error.message);
             }
         }
@@ -732,7 +617,7 @@
             const file = event.target.files[0];
             if (file) {
                 if (!file.type.match('image.*')) {
-                    mostrarError('Por favor, selecciona un archivo de imagen (JPG, PNG, GIF, WebP)');
+                    mostrarError('Selecciona un archivo de imagen');
                     return;
                 }
 
@@ -742,87 +627,52 @@
                 const reader = new FileReader();
                 reader.onload = function(e) {
                     const img = new Image();
-                    
                     img.onload = function() {
                         procesarImagenQR(img);
                     };
-                    
                     img.onerror = function() {
                         procesando = false;
                         ocultarLoader();
-                        mostrarError('Error al cargar la imagen. Intenta con otro formato.');
+                        mostrarError('Error al cargar la imagen');
                     };
-                    
                     img.src = e.target.result;
                 };
-                
-                reader.onerror = function() {
-                    procesando = false;
-                    ocultarLoader();
-                    mostrarError('Error al leer el archivo.');
-                };
-                
                 reader.readAsDataURL(file);
             }
         }
 
         function procesarImagenQR(img) {
-            mostrarLoader('Analizando código QR...');
+            mostrarLoader('Analizando QR...');
             
             setTimeout(() => {
                 try {
-                    // Verificar que jsQR esté disponible
-                    if (typeof jsQR === 'undefined') {
-                        throw new Error('La librería jsQR no está disponible');
-                    }
-                    
                     const canvas = document.createElement('canvas');
                     const ctx = canvas.getContext('2d');
-                    
-                    // Usar tamaño original para mejor calidad
                     canvas.width = img.width;
                     canvas.height = img.height;
                     ctx.drawImage(img, 0, 0);
                     
                     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                    
-                    // Usar jsQR para decodificar
-                    const code = jsQR(imageData.data, imageData.width, imageData.height, {
-                        inversionAttempts: 'dontInvert',
-                    });
+                    const code = jsQR(imageData.data, imageData.width, imageData.height);
                     
                     if (code) {
-                        console.log('✅ QR detectado:', code.data);
                         extraerYValidarDeQR(code.data);
                     } else {
-                        // Intentar con inversión
-                        const codeAttempt2 = jsQR(imageData.data, imageData.width, imageData.height, {
-                            inversionAttempts: 'onlyInvert',
-                        });
-                        
-                        if (codeAttempt2) {
-                            console.log('✅ QR detectado (segundo intento):', codeAttempt2.data);
-                            extraerYValidarDeQR(codeAttempt2.data);
-                        } else {
-                            procesando = false;
-                            ocultarLoader();
-                            mostrarError('No se pudo detectar un código QR en la imagen. Asegúrate de que la imagen sea clara y el QR esté completo.');
-                        }
+                        procesando = false;
+                        ocultarLoader();
+                        mostrarError('No se pudo detectar el QR');
                     }
                     
                 } catch (error) {
                     procesando = false;
                     ocultarLoader();
-                    console.error('❌ Error procesando imagen:', error);
-                    mostrarError('Error al procesar la imagen: ' + error.message);
+                    mostrarError('Error procesando imagen');
                 }
             }, 300);
         }
 
         function extraerYValidarDeQR(qrData) {
             try {
-                console.log('📋 Procesando datos QR');
-                
                 let datosEncriptados;
                 
                 if (qrData.includes('?')) {
@@ -832,109 +682,72 @@
                     const match = qrData.match(/data=([^&]+)/);
                     datosEncriptados = match ? match[1] : null;
                 } else {
-                    // Asumir que son los datos directamente
                     datosEncriptados = qrData;
                 }
                 
                 if (datosEncriptados) {
                     validarCertificado(datosEncriptados);
                 } else {
-                    throw new Error('El QR no contiene datos válidos de certificado');
+                    throw new Error('QR no contiene datos válidos');
                 }
                 
             } catch (error) {
                 procesando = false;
                 ocultarLoader();
-                console.error('❌ Error procesando QR:', error);
-                mostrarError('Error al procesar el código QR: ' + error.message);
+                mostrarError('Error procesando QR');
             }
         }
 
         function validarCertificado(datosEncriptados) {
-            console.log('🔐 Iniciando validación de certificado...');
             mostrarLoader('Validando certificado...');
             
-            // Timeout de seguridad para evitar bloqueos
             const timeoutId = setTimeout(() => {
                 if (procesando) {
                     procesando = false;
                     ocultarLoader();
-                    mostrarError('Tiempo de espera agotado. El certificado podría estar corrupto o la clave de encriptación incorrecta.');
+                    mostrarError('Tiempo de espera agotado');
                 }
             }, 8000);
             
             try {
-                console.log('🔓 Desencriptando datos...');
-                const datosDesencriptados = desencriptarDatos(datosEncriptados);
-                console.log('✅ Datos desencriptados correctamente');
+                const claveSecreta = "BateasSector3Certificado2024";
+                const datosBase64 = atob(datosEncriptados);
+                const bytesDesencriptados = CryptoJS.AES.decrypt(datosBase64, claveSecreta);
+                const datosOriginales = bytesDesencriptados.toString(CryptoJS.enc.Utf8);
                 
-                const certificado = JSON.parse(datosDesencriptados);
-                console.log('📄 Certificado parseado correctamente');
+                if (!datosOriginales) {
+                    throw new Error('Certificado inválido');
+                }
                 
-                // Validar campos requeridos
+                const certificado = JSON.parse(datosOriginales);
+                
                 if (!certificado.nombre || !certificado.cedula) {
-                    throw new Error('Certificado incompleto. Faltan campos requeridos.');
+                    throw new Error('Certificado incompleto');
                 }
                 
                 const estado = verificarVigencia(certificado.fechaExpiracion);
-                console.log('📅 Estado de vigencia:', estado);
-                
-                // Limpiar timeout
                 clearTimeout(timeoutId);
-                
-                // Mostrar resultados
                 mostrarResultados(certificado, estado);
                 ocultarLoader();
                 procesando = false;
-                
-                // Ocultar mensajes
                 document.getElementById('autoValidationMessage').style.display = 'none';
                 document.getElementById('errorMessage').style.display = 'none';
                 
             } catch (error) {
-                // Limpiar timeout
                 clearTimeout(timeoutId);
-                
                 procesando = false;
                 ocultarLoader();
-                console.error('❌ Error validando certificado:', error);
-                mostrarError('Error al validar el certificado: ' + error.message);
-                
-                // Mostrar secciones de entrada en caso de error
+                mostrarError('Error validando certificado');
                 document.getElementById('urlSection').classList.remove('hidden');
                 document.getElementById('uploadSection').classList.add('hidden');
                 document.getElementById('autoValidationMessage').style.display = 'none';
             }
         }
 
-        function desencriptarDatos(datosEncriptados) {
-            const claveSecreta = "BateasSector3Certificado2024";
-            
-            try {
-                // Decodificar Base64
-                const datosBase64 = atob(datosEncriptados);
-                
-                // Desencriptar usando AES
-                const bytesDesencriptados = CryptoJS.AES.decrypt(datosBase64, claveSecreta);
-                const datosOriginales = bytesDesencriptados.toString(CryptoJS.enc.Utf8);
-                
-                if (!datosOriginales) {
-                    throw new Error('Certificado inválido. Verifica que la clave de encriptación sea correcta.');
-                }
-                
-                return datosOriginales;
-                
-            } catch (error) {
-                throw new Error('Error desencriptando: ' + error.message);
-            }
-        }
-
         function formatearFecha(fecha) {
             if (!fecha) return '-';
             try {
-                // Si la fecha ya está en formato legible, devolverla tal cual
                 if (typeof fecha === 'string' && (fecha.includes('/') || fecha.includes('-'))) {
-                    // Intentar formatear si es una fecha ISO
                     if (fecha.includes('-')) {
                         const date = new Date(fecha);
                         if (!isNaN(date.getTime())) {
@@ -948,9 +761,7 @@
                     return fecha;
                 }
                 
-                // Intentar crear fecha
                 const date = new Date(fecha);
-                
                 if (!isNaN(date.getTime())) {
                     return date.toLocaleDateString('es-CO', {
                         year: 'numeric',
@@ -961,7 +772,6 @@
                     return fecha;
                 }
             } catch (error) {
-                console.error('Error formateando fecha:', fecha, error);
                 return fecha;
             }
         }
@@ -997,21 +807,11 @@
         }
 
         function mostrarResultados(certificado, estado) {
-            console.log('🎯 Mostrando resultados...');
-            console.log('📋 Certificado completo:', certificado);
-            
-            // Ocultar secciones de entrada
             document.getElementById('urlSection').classList.add('hidden');
             document.getElementById('uploadSection').classList.add('hidden');
             document.getElementById('autoValidationMessage').style.display = 'none';
             document.getElementById('errorMessage').style.display = 'none';
-            
-            // Mostrar resultados
             document.getElementById('resultsSection').style.display = 'block';
-            
-            // Llenar datos con debugging
-            console.log('📅 Fecha afiliación original:', certificado.fechaAfiliacion);
-            console.log('📅 Fecha afiliación formateada:', formatearFecha(certificado.fechaAfiliacion));
             
             document.getElementById('dataNombre').textContent = certificado.nombre || '-';
             document.getElementById('dataCedula').textContent = certificado.cedula || '-';
@@ -1022,9 +822,7 @@
             document.getElementById('dataFechaEmision').textContent = formatearFecha(certificado.fechaEmision);
             document.getElementById('dataFechaExpiracion').textContent = formatearFecha(certificado.fechaExpiracion);
             
-            // Configurar estado
             const statusCard = document.getElementById('statusCard');
-            const statusIcon = document.getElementById('statusIcon');
             const statusTitle = document.getElementById('statusTitle');
             const statusMessage = document.getElementById('statusMessage');
             const daysCounter = document.getElementById('daysCounter');
@@ -1033,25 +831,19 @@
             
             if (estado.tipo === 'valido') {
                 statusCard.classList.add('status-valid');
-                statusIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
                 statusTitle.textContent = '✓ CERTIFICADO VÁLIDO';
-                statusMessage.textContent = 'Este certificado es auténtico y se encuentra vigente';
+                statusMessage.textContent = 'Certificado auténtico y vigente';
                 daysCounter.textContent = `${estado.dias} días restantes`;
-                daysCounter.style.color = '#4CAF50';
             } else if (estado.tipo === 'proximo_vencer') {
                 statusCard.classList.add('status-warning');
-                statusIcon.innerHTML = '<i class="fas fa-exclamation-triangle"></i>';
                 statusTitle.textContent = '⚠ PRÓXIMO A VENCER';
-                statusMessage.textContent = 'Este certificado es auténtico pero está próximo a vencer';
+                statusMessage.textContent = 'Auténtico pero próximo a vencer';
                 daysCounter.textContent = `${estado.dias} días restantes`;
-                daysCounter.style.color = '#ff9800';
             } else {
                 statusCard.classList.add('status-expired');
-                statusIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
                 statusTitle.textContent = '✗ CERTIFICADO VENCIDO';
-                statusMessage.textContent = 'Este certificado ha expirado y ya no es válido';
+                statusMessage.textContent = 'Certificado expirado';
                 daysCounter.textContent = `Venció hace ${estado.dias} días`;
-                daysCounter.style.color = '#f44336';
             }
         }
 
@@ -1069,11 +861,7 @@
             document.getElementById('urlInput').value = '';
             document.getElementById('autoValidationMessage').style.display = 'none';
             document.getElementById('errorMessage').style.display = 'none';
-            
-            // Cambiar a método URL por defecto
             cambiarMetodo('url');
-            
-            // Limpiar URL
             window.history.replaceState({}, document.title, window.location.pathname);
         }
 
