@@ -1137,6 +1137,101 @@ if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
         return Promise.reject(new Error('Captura de pantalla no permitida'));
     };
 }
+
+// VARIABLES GLOBALES
+let contenidoOriginal = null;
+let estaOculto = false;
+
+// FUNCIÓN PARA DETECTAR POSIBLE CAPTURA
+function configurarProteccionCapturas() {
+    // Guardar el contenido original
+    contenidoOriginal = document.getElementById('resultsSection').innerHTML;
+    
+    // Detectar cuando la app va a segundo plano
+    document.addEventListener('visibilitychange', function() {
+        if (document.hidden && !estaOculto) {
+            // App va a fondo - POSIBLE CAPTURA
+            estaOculto = true;
+            mostrarMensajeCapturaProhibida();
+        } else if (!document.hidden && estaOculto) {
+            // App vuelve a primer plano
+            estaOculto = false;
+            restaurarContenidoOriginal();
+        }
+    });
+    
+    // También detectar cuando la ventana pierde foco (PC)
+    window.addEventListener('blur', function() {
+        if (!estaOculto) {
+            estaOculto = true;
+            mostrarMensajeCapturaProhibida();
+        }
+    });
+    
+    window.addEventListener('focus', function() {
+        if (estaOculto) {
+            estaOculto = false;
+            restaurarContenidoOriginal();
+        }
+    });
+}
+
+// FUNCIÓN PARA MOSTRAR MENSAJE DE CAPTURA PROHIBIDA
+function mostrarMensajeCapturaProhibida() {
+    const resultsSection = document.getElementById('resultsSection');
+    if (resultsSection) {
+        resultsSection.innerHTML = `
+            <div class="status-card status-expired">
+                <h3 class="status-title">⚠️ CAPTURA PROHIBIDA</h3>
+                <p class="status-message">La captura de pantalla de certificados no está permitida</p>
+                <div class="days-counter">
+                    <i class="fas fa-ban"></i>
+                </div>
+            </div>
+            <div class="certificate-data">
+                <div class="data-title">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Protección de Datos</span>
+                </div>
+                <div class="data-grid">
+                    <div class="data-item">
+                        <span class="data-label">Estado:</span>
+                        <span class="data-value">Protección Activada</span>
+                    </div>
+                    <div class="data-item">
+                        <span class="data-label">Mensaje:</span>
+                        <span class="data-value">Vuelva a la aplicación</span>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+}
+
+// FUNCIÓN PARA RESTAURAR CONTENIDO ORIGINAL
+function restaurarContenidoOriginal() {
+    if (contenidoOriginal && document.getElementById('resultsSection')) {
+        document.getElementById('resultsSection').innerHTML = contenidoOriginal;
+    }
+}
+
+// AGREGAR ESTILOS PARA EL MENSAJE (en tu CSS)
+const estilosCaptura = `
+.status-expired .fa-ban {
+    font-size: 2rem;
+    color: #f44336;
+}
+`;
+
+// INICIALIZAR PROTECCIÓN (en tu DOMContentLoaded)
+document.addEventListener('DOMContentLoaded', function() {
+    // Esperar a que exista la sección de resultados
+    setTimeout(() => {
+        if (document.getElementById('resultsSection')) {
+            configurarProteccionCapturas();
+        }
+    }, 1000);
+});
     </script>
 </body>
 </html>
