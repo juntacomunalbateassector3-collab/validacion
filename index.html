@@ -385,6 +385,38 @@
             color: #C62828;
             border: 1px solid #EF9A9A;
         }
+
+        /* PROTECCIÓN CONTRA COPIA DE TEXTO E IMÁGENES */
+        body {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+        }
+
+        /* Protección específica para imágenes */
+        img {
+            -webkit-user-drag: none;
+            -khtml-user-drag: none;
+            -moz-user-drag: none;
+            -o-user-drag: none;
+            pointer-events: none;
+        }
+
+        /* Clase para elementos que no deben copiarse */
+        .no-copy {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            -khtml-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
+
     </style>
 </head>
 <body>
@@ -905,8 +937,100 @@
         function ocultarLoader() {
             document.getElementById('loadingOverlay').style.display = 'none';
         }
+
+        // FUNCIÓN PARA APLICAR PROTECCIONES
+function aplicarProtecciones() {
+    // Prevenir clic derecho
+    document.addEventListener('contextmenu', function(e) {
+        e.preventDefault();
+        return false;
+    });
+
+    // Prevenir arrastre de imágenes
+    document.addEventListener('dragstart', function(e) {
+        if (e.target.tagName === 'IMG' || e.target.classList.contains('no-drag')) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // Prevenir selección de texto
+    document.addEventListener('selectstart', function(e) {
+        e.preventDefault();
+        return false;
+    });
+
+    // Prevenir copia con Ctrl+C
+    document.addEventListener('copy', function(e) {
+        e.preventDefault();
+        return false;
+    });
+
+    // Prevenir cortar con Ctrl+X
+    document.addEventListener('cut', function(e) {
+        e.preventDefault();
+        return false;
+    });
+}
+
+// EJECUTAR PROTECCIONES AL CARGAR LA PÁGINA
+document.addEventListener('DOMContentLoaded', function() {
+    aplicarProtecciones();
+});
+
+// PROTECCIONES ESPECÍFICAS PARA MÓVILES
+function proteccionesMoviles() {
+    // Prevenir zoom con doble tap
+    document.addEventListener('dblclick', function(e) {
+        e.preventDefault();
+    }, { passive: false });
+
+    // Prevenir touch prolongado
+    document.addEventListener('touchstart', function(e) {
+        if (e.touches.length > 1) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+
+    // Prevenir selección con touch largo
+    document.addEventListener('touchend', function(e) {
+        e.preventDefault();
+    }, { passive: false });
+}
+
+// Ejecutar en móviles
+if ('ontouchstart' in window) {
+    document.addEventListener('DOMContentLoaded', proteccionesMoviles);
+}
+
+// PROTECCIÓN CONTRA HERRAMIENTAS DE DESARROLLADOR
+function proteccionDesarrollador() {
+    // Prevenir F12, Ctrl+Shift+I, etc.
+    document.addEventListener('keydown', function(e) {
+        if (
+            e.key === 'F12' ||
+            (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'C' || e.key === 'J')) ||
+            (e.ctrlKey && e.key === 'u')
+        ) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    // Detectar si se abre consola
+    setInterval(function() {
+        const before = new Date().getTime();
+        debugger;
+        const after = new Date().getTime();
+        if (after - before > 100) {
+            document.body.innerHTML = '<h1 style="text-align:center;padding:50px;">Acceso no autorizado</h1>';
+        }
+    }, 1000);
+}
+
+// Usar solo si necesitas máxima seguridad
+// proteccionDesarrollador();
     </script>
 </body>
 </html>
-
 
